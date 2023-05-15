@@ -1,4 +1,5 @@
 flask
-csv
+python-csv
 pyqrcode
 requests
+pymongo
