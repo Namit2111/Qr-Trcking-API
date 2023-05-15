@@ -1,7 +1,7 @@
+pypng
 flask
 pyqrcode
 requests
 pymongo
 Flask
 flask-cors
-pypng
