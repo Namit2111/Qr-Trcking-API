@@ -1,5 +1,4 @@
 flask
-python-csv
 pyqrcode
 requests
 pymongo
