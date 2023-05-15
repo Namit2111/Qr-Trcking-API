@@ -5,7 +5,7 @@ import checkurl
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
+# CORS(app)
 # Set path to CSV file
 CSV_FILE = "links.csv"
 
@@ -102,6 +102,6 @@ def show_links():
     return table
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
-    app.run(host='0.0.0.0',port=5000,use_reloader=True)
+# if __name__ == "__main__":
+#     app.run(debug=True)
+#     app.run(host='0.0.0.0',port=5000,use_reloader=True)
