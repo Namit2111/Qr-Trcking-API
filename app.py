@@ -4,7 +4,7 @@ import checkurl
 from flask_cors import CORS
 from pymongo import MongoClient
 
-app = Flask(__name__)
+app = Flask(__name__,static_folder='./static')
 CORS(app)
 # Set up MongoDB client
 client = MongoClient('mongodb+srv://Namit:namitjain12@qr-links.vmesk58.mongodb.net/')
