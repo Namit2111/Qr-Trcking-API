@@ -1,17 +1,21 @@
 from flask import Flask, request, send_file, redirect
-import csv
 import qrgen
 import checkurl
 from flask_cors import CORS
+from pymongo import MongoClient
 
 app = Flask(__name__)
 CORS(app)
-# Set path to CSV file
-CSV_FILE = "links.csv"
+# Set up MongoDB client
+client = MongoClient('mongodb+srv://Namit:namitjain12@qr-links.vmesk58.mongodb.net/')
+db = client['QR-Links']
+links = db['links']
+
 
 @app.route('/')
 def home():
     return "Home"
+
 
 @app.route('/qr')
 def qrcode():
@@ -23,83 +27,50 @@ def qrcode():
     if track:
         code = checkurl.check(data)
         if code == "200":
-            # Check if link already exists in CSV file
-            link_exists = False
-            with open(CSV_FILE, 'r') as csvfile:
-                reader = csv.reader(csvfile)
-                for row in reader:
-                    if row[0] == data:
-                        link_exists = True
-                        break
-            
-            if link_exists:
+            # Check if link already exists in MongoDB
+            if links.find_one({'url': data}):
                 # If link already exists, construct URL for tracking link
                 data = request.host_url + "track?link=" + data
             else:
-                # If link does not exist, insert link into CSV file with open count of 0
-                with open(CSV_FILE, 'a', newline='') as csvfile:
-                    writer = csv.writer(csvfile)
-                    writer.writerow([data, 0])
+                # If link does not exist, insert link into MongoDB with open count of 0
+                links.insert_one({'url': data, 'open_count': 0})
                 # Construct URL for tracking link
                 data = request.host_url + "track?link=" + data
+        else:
+            return "Not valid link"
 
     # Generate QR code for link
     return send_file(qrgen.qr(data), mimetype='image/png')
 
 
-
 @app.route("/track")
 def track_link():
-    # Find link in CSV file
+    # Find link in MongoDB
     link = request.args.get('link', False)
-    rows = []
-    link_found = False
-    with open(CSV_FILE, 'r') as csvfile:
-        reader = csv.reader(csvfile)
-        for row in reader:
-            if row[0] == link:
-                # If link exists, increment open count and redirect to link
-                open_count = int(row[1]) + 1
-                row[1] = str(open_count)
-                link_found = True
-                
-            rows.append(row)
+    found_link = links.find_one({'url': link})
 
-    if link_found:
-        with open(CSV_FILE, 'a', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerows(rows)
+    if found_link:
+        # If link exists, increment open count and redirect to link
+        open_count = found_link['open_count'] + 1
+        links.update_one({'url': link}, {'$set': {'open_count': open_count}})
         return redirect(link)
     else:
         return "Link not found"
 
 
-
-
-
-
-
-
-
-
 @app.route('/links')
 def show_links():
-    # Retrieve all links in CSV file
+    # Retrieve all links in MongoDB
     link_list = []
-    with open(CSV_FILE, 'r') as csvfile:
-        reader = csv.reader(csvfile)
-        for row in reader:
-            link = row[0]
-            open_count = row[1]
-            track_url = request.host_url + "track?link=" + link
-            link_list.append((link, open_count, track_url))
+    for link in links.find():
+        link_list.append((link['url'], link['open_count'], request.host_url + "track?link=" + link['url']))
 
     # Generate HTML table for links
     table = "<table><tr><th>Link</th><th>Open Count</th><th>Track URL</th></tr>"
     for link, open_count, track_url in link_list:
         table += f"<tr><td>{link}</td><td>{open_count}</td><td><a href='{track_url}'>{track_url}</a></td></tr>"
     table += "</table>"
-    
+
     return table
 
 
