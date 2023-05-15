@@ -54,7 +54,7 @@ def track_link():
     link = request.args.get('link', False)
     rows = []
     link_found = False
-    with open(CSV_FILE, 'r+') as csvfile:
+    with open(CSV_FILE, 'a') as csvfile:
         reader = csv.reader(csvfile)
         for row in reader:
             if row[0] == link:
