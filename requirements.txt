@@ -3,3 +3,5 @@ python-csv
 pyqrcode
 requests
 pymongo
+Flask
+flask-cors
