@@ -14,14 +14,14 @@ links = db['links']
 
 @app.route('/')
 def home():
-    return "Home"
-
+    return "QR code API "
 
 @app.route('/qr')
 def qrcode():
-    # Get track and data parameters from query string
+    # Get track, data and key parameters from query string
     track = request.args.get('track', False)
     data = request.args.get('data')
+    key = request.args.get('key', None)
 
     # Check if tracking is enabled and link is valid
     if track:
@@ -32,8 +32,13 @@ def qrcode():
                 # If link already exists, construct URL for tracking link
                 data = request.host_url + "track?link=" + data
             else:
-                # If link does not exist, insert link into MongoDB with open count of 0
-                links.insert_one({'url': data, 'open_count': 0})
+                # If link does not exist, insert link into MongoDB with open count of 0 and key (if provided)
+                link_data = {'url': data, 'open_count': 0}
+                if key:
+                    link_data['key'] = key
+                link_data['key'] =None
+                links.insert_one(link_data)
+                print(link_data)
                 # Construct URL for tracking link
                 data = request.host_url + "track?link=" + data
         else:
@@ -41,6 +46,7 @@ def qrcode():
 
     # Generate QR code for link
     return send_file(qrgen.qr(data), mimetype='image/png')
+
 
 
 @app.route("/track")
@@ -57,13 +63,21 @@ def track_link():
     else:
         return "Link not found"
 
-
 @app.route('/links')
 def show_links():
     # Retrieve all links in MongoDB
+    key = request.args.get('key', None)
     link_list = []
-    for link in links.find():
-        link_list.append((link['url'], link['open_count'], request.host_url + "track?link=" + link['url']))
+    if key:
+    
+        # Retrieve links with the given key from the database
+        for link in links.find({'key': key}):
+         
+            link_list.append((link['url'], link['open_count'], request.host_url + "track?link=" + link['url']))
+    else:
+        # Retrieve all links from the database
+        for link in links.find({'key': None}):
+            link_list.append((link['url'], link['open_count'], request.host_url + "track?link=" + link['url']))
 
     # Generate HTML table for links
     table = "<table><tr><th>Link</th><th>Open Count</th><th>Track URL</th></tr>"
@@ -72,6 +86,7 @@ def show_links():
     table += "</table>"
 
     return table
+
 
 
 if __name__ == "__main__":

@@ -32,7 +32,6 @@ The application will be available at `http://localhost:5000`.
 
 ### Endpoints
 
-
 #### `/qr`
 
 Generates a QR code for a given URL. 
@@ -40,8 +39,9 @@ Generates a QR code for a given URL.
 Parameters:
 - `data`: the URL to generate a QR code for (required)
 - `track`: whether to track clicks on the link (optional)
+- `key`: a custom key for the link (optional)
 ```
-Example: `http://localhost:5000/qr?data=https://www.google.com&track=True`
+Example: `http://localhost:5000/qr?data=https://www.google.com&track=True&key=mycustomkey`
 ```
 
 #### `/track`
@@ -53,9 +53,17 @@ Parameters:
 ```
 Example: `http://localhost:5000/track?link=https://www.google.com`
 ```
+
 #### `/links`
 
 Displays a table of all links that have been tracked by the application.
+
+Parameters:
+`key`: a custom key for the link (optional)
 ```
-Example: `http://localhost:5000/links`
+Example: `http://localhost:5000/links?key=my-key`
 ```
+
+The custom key feature allows users to assign their own keys to the links they generate,  This can be useful for branding purposes or to make the links easier to remember.
+
+Thank you!
