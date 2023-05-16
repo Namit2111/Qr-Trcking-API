@@ -10,6 +10,14 @@ QR-Link Tracker is a Flask application that generates QR codes for URLs and trac
 git clone https://github.com/username/qr-link-tracker.git
 ```
 
+2. Start docker-compose:
+
+```
+docker-compose up -d
+```
+
+or run locally then:
+
 2. Install the required packages:
 
 ```
@@ -18,17 +26,21 @@ pip install -r requirements.txt
 
 3. Set up MongoDB by creating a cluster and a database on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
 
-4. Update the MongoDB client connection string in `app.py` with your own connection string.
+4. Set the MongoDB client connection string in your environment:
+
+```
+export MONGODB_URL=mongodb+srv://Namit:namitjain12@qr-links.vmesk58.mongodb.net/
+```
+
+5. Start the application
+
+```
+cd app
+python3 -m flask --app app run --host=0.0.0.0
+```
+The application will be available at `http://localhost:5000`.
 
 ## Usage
-
-To start the Flask application, run the following command:
-
-```
-python app.py
-```
-
-The application will be available at `http://localhost:5000`.
 
 ### Endpoints
 

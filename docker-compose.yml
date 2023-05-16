@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  api:
+    container_name: qr-api
+    image: qr-api
+    build: .
+    volumes:
+      - ./app:/usr/src/app/app
+    ports:
+      - 5000:5000
+    environment:
+      - MONGODB_URL=mongodb://mongodb:27017/node-boilerplate
+    #   - CELERY_BROKER_URL=redis://redis:6379/0
+    #   - CELERY_RESULT_BACKEND=redis://redis:6379/1
+    #   - APP_CONFIG_FILE=local
+    #   - APP_CONFIG_DIR=/usr/src/app/app/config
+    depends_on:
+      - mongodb
+    networks:
+      - node-network
+
+  mongodb:
+    image: mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - dbdata6:/data/db
+    networks:
+      - node-network
+
+volumes:
+  dbdata6:
+
+networks:
+  node-network:
+    driver: bridge
