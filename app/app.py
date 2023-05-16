@@ -11,7 +11,7 @@ CORS(app)
 # Set up MongoDB client
 
 mongodb_url = os.environ.get(
-    "MONGODB_URL", "mongodb+srv://Namit:namitjain12@qr-links.vmesk58.mongodb.net/"
+    "MONGODB_URL"
 )
 
 client = MongoClient(mongodb_url)
