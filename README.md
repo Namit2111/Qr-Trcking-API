@@ -27,6 +27,10 @@ To start the Flask application, run the following command:
 ```
 python app.py
 ```
+or use docker with:
+```
+docker-compose up -d
+```
 
 The application will be available at `http://localhost:5000`.
 
