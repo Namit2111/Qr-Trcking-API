@@ -1,4 +1,6 @@
 import requests
+
+
 def check(url):
     try:
         res = requests.get(url)
