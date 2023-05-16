@@ -2,8 +2,8 @@ from flask import Flask, jsonify, redirect, request, send_file
 from flask_cors import CORS
 from pymongo import MongoClient
 
-import checkurl
-import qrgen
+import app.checkurl as checkurl
+import app.qrgen as qrgen
 
 app = Flask(__name__)
 CORS(app)
