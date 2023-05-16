@@ -1,4 +1,4 @@
-from flask import Flask, request, send_file, redirect
+from flask import Flask, request, send_file, redirect,jsonify
 import qrgen
 import checkurl
 from flask_cors import CORS
@@ -79,13 +79,8 @@ def show_links():
         for link in links.find({'key': None}):
             link_list.append((link['url'], link['open_count'], request.host_url + "track?link=" + link['url']))
 
-    # Generate HTML table for links
-    table = "<table><tr><th>Link</th><th>Open Count</th><th>Track URL</th></tr>"
-    for link, open_count, track_url in link_list:
-        table += f"<tr><td>{link}</td><td>{open_count}</td><td><a href='{track_url}'>{track_url}</a></td></tr>"
-    table += "</table>"
 
-    return table
+    return jsonify(link_list)
 
 
 
