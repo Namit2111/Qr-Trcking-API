@@ -1,18 +1,17 @@
 import os
 
-import checkurl as checkurl
-import qrgen as qrgen
 from flask import Flask, jsonify, redirect, request, send_file
 from flask_cors import CORS
 from pymongo import MongoClient
+
+import checkurl as checkurl
+import qrgen as qrgen
 
 app = Flask(__name__)
 CORS(app)
 # Set up MongoDB client
 
-mongodb_url = os.environ.get(
-    "MONGODB_URL"
-)
+mongodb_url = os.environ.get("MONGODB_URL")
 
 client = MongoClient(mongodb_url)
 db = client["QR-Links"]
@@ -77,10 +76,8 @@ def show_links():
     key = request.args.get("key", None)
     link_list = []
     if key:
-
         # Retrieve links with the given key from the database
         for link in links.find({"key": key}):
-
             link_list.append(
                 (
                     link["url"],
