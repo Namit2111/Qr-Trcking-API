@@ -9,7 +9,6 @@ interface QRPreviewProps {
   backgroundColor: string
   logo: string | null
   enableTracking: boolean
-  enableDynamic: boolean
   enableShortUrl: boolean
   downloadFormat: "png" | "svg"
   onGenerate: () => void
@@ -21,7 +20,6 @@ export default function QRPreview({
   backgroundColor,
   logo,
   enableTracking,
-  enableDynamic,
   enableShortUrl,
   downloadFormat,
   onGenerate,
@@ -43,10 +41,6 @@ export default function QRPreview({
       try {
         // Add metadata to content if features are enabled
         let qrContent = content
-        if (enableDynamic) {
-          // In a real app, this would create a dynamic link with an ID
-          qrContent = `dynamic:${content}`
-        }
         if (enableTracking) {
           // In a real app, this would add tracking parameters
           qrContent = `tracking:${qrContent}`
@@ -99,7 +93,7 @@ export default function QRPreview({
     }
 
     generateQR()
-  }, [content, foregroundColor, backgroundColor, logo, enableTracking, enableDynamic, enableShortUrl, downloadFormat])
+  }, [content, foregroundColor, backgroundColor, logo, enableTracking, enableShortUrl, downloadFormat])
 
   // Handle download
   const handleDownload = () => {
@@ -138,7 +132,6 @@ export default function QRPreview({
 
             <div className="text-sm text-slate-500 mb-4 text-center max-w-xs">
               {enableTracking && <span className="block">✓ Tracking enabled</span>}
-              {enableDynamic && <span className="block">✓ Dynamic QR code</span>}
               {enableShortUrl && <span className="block">✓ Short URL enabled</span>}
             </div>
           </div>

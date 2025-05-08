@@ -7,7 +7,6 @@ const qrCodes: QRCodeData[] = [
     content: "https://example.com",
     isTracking: true,
     isShortUrl: false,
-    isDynamic: false,
     foregroundColor: "#000000",
     backgroundColor: "#ffffff",
     hasLogo: false,
@@ -32,8 +31,7 @@ const qrCodes: QRCodeData[] = [
     content: "https://mywebsite.com/product",
     isTracking: true,
     isShortUrl: true,
-    isDynamic: true,
-    privateKey: "client-xyz",
+
     foregroundColor: "#000000",
     backgroundColor: "#ffffff",
     hasLogo: true,
@@ -54,7 +52,7 @@ const qrCodes: QRCodeData[] = [
     content: "https://blog.example.com/article",
     isTracking: true,
     isShortUrl: false,
-    isDynamic: false,
+
     foregroundColor: "#000000",
     backgroundColor: "#ffffff",
     hasLogo: false,
@@ -64,15 +62,7 @@ const qrCodes: QRCodeData[] = [
 ]
 
 // Get QR codes (filtered by private key if provided)
-export function getQRCodes(privateKey?: string): QRCodeData[] {
-  if (privateKey) {
-    // Return QR codes with matching private key
-    return qrCodes.filter((qr) => qr.privateKey === privateKey)
-  } else {
-    // Return public QR codes (no private key)
-    return qrCodes.filter((qr) => !qr.privateKey)
-  }
-}
+
 
 // Save a new QR code
 export function saveQRCode(qrCode: QRCodeData): void {

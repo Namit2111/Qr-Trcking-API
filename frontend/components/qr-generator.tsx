@@ -16,12 +16,8 @@ export default function QRGenerator() {
 
   // Feature toggles
   const [enableTracking, setEnableTracking] = useState(false)
-  const [enableDynamic, setEnableDynamic] = useState(false)
   const [enableShortUrl, setEnableShortUrl] = useState(false)
-  const [privateKey, setPrivateKey] = useState("")
 
-  // Dynamic content (if enabled)
-  const [dynamicContent, setDynamicContent] = useState("")
 
   // Customization options
   const [foregroundColor, setForegroundColor] = useState("#000000")
@@ -72,11 +68,8 @@ export default function QRGenerator() {
     saveQRCode({
       id: Date.now().toString(),
       content,
-      dynamicContent: enableDynamic ? dynamicContent : undefined,
       isTracking: enableTracking,
       isShortUrl: enableShortUrl,
-      isDynamic: enableDynamic,
-      privateKey: privateKey || undefined,
       foregroundColor,
       backgroundColor,
       hasLogo: !!logo,
@@ -114,83 +107,6 @@ export default function QRGenerator() {
                 </p>
               )}
             </div>
-
-            {/* Feature toggles */}
-            {/* <div className="space-y-4"> */}
-              {/* <h3 className="text-base font-medium text-slate-800">Features</h3> */}
-
-              {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {isUrl && (
-                  <CustomToggle
-                    id="tracking"
-                    label="Enable Tracking"
-                    description="Track scans, timestamps, and location data"
-                    checked={enableTracking}
-                    onChange={setEnableTracking}
-                  />
-                )}
-
-                <CustomToggle
-                  id="dynamic"
-                  label="Dynamic QR Code"
-                  description="Update content later without changing the QR code"
-                  checked={enableDynamic}
-                  onChange={setEnableDynamic}
-                />
-
-                {isUrl && (
-                  <CustomToggle
-                    id="shorturl"
-                    label="Create Short URL"
-                    description="Generate a shorter URL for your link"
-                    checked={enableShortUrl}
-                    onChange={setEnableShortUrl}
-                  />
-                )}
-              </div> */}
-
-              {/* Private key input (only if tracking is enabled) */}
-              {/* {enableTracking && (
-                <div className="mt-4 p-4 bg-slate-50 rounded-md border border-slate-200">
-                  <label htmlFor="privateKey" className="block text-sm font-medium text-slate-700 mb-1">
-                    Private Key (Optional)
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      id="privateKey"
-                      className="flex-1 px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
-                      placeholder="e.g., client-xyz"
-                      value={privateKey}
-                      onChange={(e) => setPrivateKey(e.target.value)}
-                    />
-                  </div>
-                  <p className="mt-1 text-xs text-slate-500">
-                    Add a private key to hide this QR code from the public dashboard
-                  </p>
-                </div>
-              )} */}
-
-              {/* Dynamic content input (only if dynamic is enabled) */}
-              {/* {enableDynamic && (
-                <div className="mt-4 p-4 bg-slate-50 rounded-md border border-slate-200">
-                  <label htmlFor="dynamicContent" className="block text-sm font-medium text-slate-700 mb-1">
-                    Dynamic Content (Optional)
-                  </label>
-                  <textarea
-                    id="dynamicContent"
-                    rows={2}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
-                    placeholder="Content that can be updated later"
-                    value={dynamicContent}
-                    onChange={(e) => setDynamicContent(e.target.value)}
-                  />
-                  <p className="mt-1 text-xs text-slate-500">
-                    This content can be changed later without regenerating the QR code
-                  </p>
-                </div>
-              )} */}
-            {/* </div> */}
 
             {/* Customization options */}
             <div className="space-y-4">
@@ -293,7 +209,6 @@ export default function QRGenerator() {
             backgroundColor={backgroundColor}
             logo={logo}
             enableTracking={enableTracking}
-            enableDynamic={enableDynamic}
             enableShortUrl={enableShortUrl}
             downloadFormat={downloadFormat}
             onGenerate={handleGenerateQR}

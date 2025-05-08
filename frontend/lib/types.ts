@@ -9,8 +9,6 @@ export interface QRCodeData {
   dynamicContent?: string
   isTracking: boolean
   isShortUrl: boolean
-  isDynamic: boolean
-  privateKey?: string
   foregroundColor: string
   backgroundColor: string
   hasLogo: boolean
