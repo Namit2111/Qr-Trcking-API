@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState, useEffect, useRef } from "react"
-import { isValidUrl } from "@/lib/utils"
+import { detectContentType } from "@/lib/utils"
 import QRPreview from "@/components/qr-preview"
 import CustomToggle from "@/components/custom-toggle"
 import CustomColorPicker from "@/components/custom-color-picker"
@@ -13,6 +13,9 @@ export default function QRGenerator() {
   // QR content state
   const [content, setContent] = useState("")
   const [isUrl, setIsUrl] = useState(false)
+  const [qrType, setQrType] = useState<"text" | "url" | "phone" | "sms" | "email" | "contact">("text")
+  const [contentType, setContentType] = useState<"url" | "email" | "sms" | "tel" | "text">("text")
+
 
   // Feature toggles
   const [enableTracking, setEnableTracking] = useState(false)
@@ -30,14 +33,14 @@ export default function QRGenerator() {
 
   // Check if content is a valid URL
   useEffect(() => {
-    const valid = isValidUrl(content)
-    setIsUrl(valid)
+    const type = detectContentType(content)
+    setContentType(type)
 
     // If not a URL, disable tracking and short URL options
-    if (!valid) {
-      setEnableTracking(false)
-      setEnableShortUrl(false)
-    }
+    // if (!valid) {
+    //   setEnableTracking(false)
+    //   setEnableShortUrl(false)
+    // }
   }, [content])
 
   // Handle logo upload
@@ -60,14 +63,58 @@ export default function QRGenerator() {
     }
   }
 
+  const handleQrTypeChange = (type: typeof qrType) => {
+    setQrType(type)
+    switch (type) {
+      case "url":
+        setContent("https://")
+        break
+      case "phone":
+        setContent("tel:+123456789")
+        break
+      case "sms":
+        setContent("sms:+123456789")
+        break
+      case "email":
+        setContent("mailto:example@example.com")
+        break
+      case "contact":
+        setContent(`BEGIN:VCARD\nVERSION:3.0\nFN=John Doe\nTEL=+123456789\nEMAIL=john@example.com\nEND:VCARD`)
+        break
+      default:
+        setContent("")
+    }
+  }
+
+
+
+
   // Handle QR code generation and saving
   const handleGenerateQR = () => {
     if (!content) return
 
+    const formattedContent = (() => {
+      switch (qrType) {
+        case "url":
+          return content.startsWith("http") ? content : `https://${content}`
+        case "phone":
+          return `tel:${content}`
+        case "sms":
+          return `sms:${content}`
+        case "email":
+          return `mailto:${content}`
+        case "contact":
+          return `BEGIN:VCARD\nVERSION:3.0\nFN:${content}\nEND:VCARD`
+        default:
+          return content
+      }
+    })()
+
+
     // In a real app, this would save to a database
     saveQRCode({
       id: Date.now().toString(),
-      content,
+      content: formattedContent,
       isTracking: enableTracking,
       isShortUrl: enableShortUrl,
       foregroundColor,
@@ -89,23 +136,60 @@ export default function QRGenerator() {
           <div className="space-y-6">
             {/* Content input */}
             <div>
-              <label htmlFor="content" className="block text-sm font-medium text-slate-700 mb-1">
+              {/* <label htmlFor="content" className="block text-sm font-medium text-slate-700 mb-1">
                 QR Code Content
-              </label>
+              </label> */}
+              <div className="flex items-center justify-between mb-2">
+                <label htmlFor="content" className="text-sm font-medium text-slate-700">
+                  QR Code Content
+                </label>
+                <div>
+                  <select
+                    value={qrType}
+                    onChange={(e) => handleQrTypeChange(e.target.value as any)}
+                    className="text-sm px-3 py-1 border border-slate-300 rounded-md bg-white text-slate-700 shadow-sm focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  >
+                    <option value="text">Plain Text</option>
+                    <option value="url">URL</option>
+                    <option value="phone">Phone</option>
+                    <option value="sms">SMS</option>
+                    <option value="email">Email</option>
+                    <option value="contact">Contact (vCard)</option>
+                  </select>
+                </div>
+              </div>
+
+
+
               <textarea
                 id="content"
                 rows={3}
                 className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
-                placeholder="Enter text or URL for your QR code"
+                placeholder={
+                  qrType === "url"
+                    ? "Enter URL (e.g. https://example.com)"
+                    : qrType === "phone"
+                      ? "Enter phone number (e.g. +123456789)"
+                      : qrType === "sms"
+                        ? "Enter number for SMS"
+                        : qrType === "email"
+                          ? "Enter email address"
+                          : qrType === "contact"
+                            ? "Enter contact details in vCard format"
+                            : "Enter text for your QR code"
+                }
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
               />
-              {isUrl && (
+
+              {contentType !== "text" && (
                 <p className="mt-1 text-sm text-emerald-600">
                   <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 mr-1"></span>
-                  Valid URL detected
+                  Valid {contentType.toUpperCase()} detected
                 </p>
               )}
+
+
             </div>
 
             {/* Customization options */}
@@ -176,22 +260,20 @@ export default function QRGenerator() {
                   <button
                     type="button"
                     onClick={() => setDownloadFormat("png")}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${
-                      downloadFormat === "png"
-                        ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
-                        : "bg-slate-100 text-slate-700 border border-slate-300 hover:bg-slate-200"
-                    }`}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${downloadFormat === "png"
+                      ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                      : "bg-slate-100 text-slate-700 border border-slate-300 hover:bg-slate-200"
+                      }`}
                   >
                     PNG
                   </button>
                   <button
                     type="button"
                     onClick={() => setDownloadFormat("svg")}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${
-                      downloadFormat === "svg"
-                        ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
-                        : "bg-slate-100 text-slate-700 border border-slate-300 hover:bg-slate-200"
-                    }`}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition ${downloadFormat === "svg"
+                      ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                      : "bg-slate-100 text-slate-700 border border-slate-300 hover:bg-slate-200"
+                      }`}
                   >
                     SVG
                   </button>
