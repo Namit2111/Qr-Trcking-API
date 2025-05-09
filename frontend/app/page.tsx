@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from 'next/image'
 import QRGenerator from "@/components/qr-generator"
 
 export default function Home() {
@@ -8,23 +9,13 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-emerald-500 rounded-md flex items-center justify-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="w-5 h-5 text-white"
-                >
-                  <path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z" />
-                  <path d="M3 9V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4" />
-                  <path d="M12 12v5" />
-                  <path d="M8 12v2" />
-                  <path d="M16 12v2" />
-                </svg>
+              <div className="w-8 h-8 rounded-md flex items-center justify-center">
+                <Image
+                  src="/logo.jpg" // path to your image in the public folder
+                  alt="Logo"
+                  width={32} // specify the width of the image
+                  height={32} // specify the height of the image
+                />
               </div>
               <h1 className="text-xl font-semibold text-slate-800">QR Small</h1>
             </div>
