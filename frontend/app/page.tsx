@@ -1,47 +1,10 @@
-import Link from "next/link"
 import Image from 'next/image'
-import QRGenerator from "@/components/qr-generator"
+import Link from 'next/link'
+import QRGenerator from '@/components/qr-generator'
 
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b border-slate-200 py-4">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-md flex items-center justify-center">
-                <Image
-                  src="/logo.jpg" // path to your image in the public folder
-                  alt="Logo"
-                  width={32} // specify the width of the image
-                  height={32} // specify the height of the image
-                />
-              </div>
-              <h1 className="text-xl font-semibold text-slate-800">QR Small</h1>
-            </div>
-            <nav>
-              <ul className="flex gap-6">
-                <li>
-                  <Link href="/" className="text-slate-800 font-medium hover:text-emerald-600 transition-colors">
-                    Generator
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/blog" className="text-slate-800 font-medium hover:text-emerald-600 transition-colors">
-                    Blog
-                  </Link>
-                </li>
-                {/* <li>
-                  <Link href="/dashboard" className="text-slate-600 hover:text-emerald-600 transition-colors">
-                    Dashboard
-                  </Link>
-                </li> */}
-              </ul>
-            </nav>
-          </div>
-        </div>
-      </header>
-
       <main className="flex-1 py-8">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
