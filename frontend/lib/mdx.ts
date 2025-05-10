@@ -6,6 +6,11 @@ import { serialize } from 'next-mdx-remote/serialize';
 
 const contentDirectory = path.join(process.cwd(), 'content');
 
+export interface FAQ {
+  question: string;
+  answer: string;
+}
+
 export interface PostMetadata {
   title: string;
   date: string;
@@ -13,17 +18,12 @@ export interface PostMetadata {
   slug: string;
   image?: string;
   readTime: number;
+  faqs?: FAQ[];
 }
 
 export interface Post {
+  frontmatter: PostMetadata;
   content: string;
-  frontmatter: {
-    title: string;
-    date: string;
-    excerpt: string;
-    image?: string;
-    readTime: number;
-  };
 }
 
 export async function getMDXFiles() {
@@ -36,30 +36,29 @@ export async function getMDXFiles() {
 }
 
 export async function getPostMetadata(): Promise<PostMetadata[]> {
-  const mdxFiles = await getMDXFiles();
-  
-  const posts = mdxFiles.map(fileName => {
-    const filePath = path.join(contentDirectory, fileName);
-    const fileContents = fs.readFileSync(filePath, 'utf8');
-    const { data, content } = matter(fileContents);
-    
-    return {
-      title: data.title,
-      date: data.date,
-      excerpt: data.excerpt || '',
-      image: data.image || null,
-      slug: fileName.replace('.mdx', ''),
-      readTime: calculateReadTime(content)
-    };
-  });
-  
-  return posts.sort((a, b) => {
-    if (a.date < b.date) {
-      return 1;
-    } else {
-      return -1;
-    }
-  });
+  const files = await fs.promises.readdir(contentDirectory);
+  const posts = await Promise.all(
+    files
+      .filter((file) => file.endsWith('.mdx'))
+      .map(async (file) => {
+        const filePath = path.join(contentDirectory, file);
+        const fileContent = await fs.promises.readFile(filePath, 'utf8');
+        const { data } = matter(fileContent);
+        const slug = file.replace(/\.mdx$/, '');
+
+        return {
+          title: data.title,
+          date: data.date,
+          excerpt: data.excerpt,
+          image: data.image,
+          readTime: data.readTime,
+          slug,
+          faqs: data.faqs || [],
+        };
+      })
+  );
+
+  return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
@@ -68,7 +67,6 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     const fileContents = fs.readFileSync(filePath, 'utf8');
     const { content, data } = matter(fileContents);
     
-    // Return raw content - will be processed by MDXRemote directly
     return {
       content: content,
       frontmatter: {
@@ -76,7 +74,9 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
         date: data.date,
         excerpt: data.excerpt || '',
         image: data.image || null,
-        readTime: calculateReadTime(content)
+        readTime: calculateReadTime(content),
+        slug,
+        faqs: data.faqs || []
       }
     };
   } catch (error) {

@@ -4,6 +4,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Metadata } from 'next'
+import FAQ from '@/components/FAQ'
 
 export async function generateStaticParams() {
   const posts = await getPostMetadata()
@@ -12,8 +13,13 @@ export async function generateStaticParams() {
   }))
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const post = await getPostBySlug(params.slug)
+type Props = {
+  params: Promise<{ slug: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const resolvedParams = await params
+  const post = await getPostBySlug(resolvedParams.slug)
   
   if (!post) {
     return {
@@ -42,8 +48,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 }
 
-export default async function BlogPost({ params }: { params: { slug: string } }) {
-  const post = await getPostBySlug(params.slug)
+export default async function BlogPost({ params }: Props) {
+  const resolvedParams = await params
+  const post = await getPostBySlug(resolvedParams.slug)
 
   if (!post) {
     notFound()
@@ -84,6 +91,10 @@ export default async function BlogPost({ params }: { params: { slug: string } })
                 <MDXRemote source={post.content} />
               </div>
             </article>
+
+            {post.frontmatter.faqs && post.frontmatter.faqs.length > 0 && (
+              <FAQ faqs={post.frontmatter.faqs} />
+            )}
           </div>
         </div>
       </main>
