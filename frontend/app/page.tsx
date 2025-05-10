@@ -26,6 +26,11 @@ export default function Home() {
                     Generator
                   </Link>
                 </li>
+                <li>
+                  <Link href="/blog" className="text-slate-800 font-medium hover:text-emerald-600 transition-colors">
+                    Blog
+                  </Link>
+                </li>
                 {/* <li>
                   <Link href="/dashboard" className="text-slate-600 hover:text-emerald-600 transition-colors">
                     Dashboard

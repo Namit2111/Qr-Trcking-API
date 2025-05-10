@@ -33,3 +33,10 @@ export function detectContentType(content: string): "url" | "email" | "sms" | "t
 export function cn(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(" ")
 }
+
+export function calculateReadTime(content: string): number {
+  const wordsPerMinute = 200;
+  const words = content.trim().split(/\s+/).length;
+  const readTime = Math.ceil(words / wordsPerMinute);
+  return readTime;
+}
