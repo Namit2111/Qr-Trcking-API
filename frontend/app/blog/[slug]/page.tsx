@@ -3,12 +3,43 @@ import { getPostBySlug, getPostMetadata, PostMetadata } from '@/lib/mdx'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import Image from 'next/image'
 import Link from 'next/link'
+import { Metadata } from 'next'
 
 export async function generateStaticParams() {
   const posts = await getPostMetadata()
   return posts.map((post: PostMetadata) => ({
     slug: post.slug,
   }))
+}
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const post = await getPostBySlug(params.slug)
+  
+  if (!post) {
+    return {
+      title: 'Post Not Found',
+      description: 'The requested blog post could not be found.',
+    }
+  }
+
+  return {
+    title: post.frontmatter.title,
+    description: post.frontmatter.excerpt,
+    openGraph: {
+      title: post.frontmatter.title,
+      description: post.frontmatter.excerpt,
+      type: 'article',
+      publishedTime: post.frontmatter.date,
+      authors: ['QR Small'],
+      images: post.frontmatter.image ? [post.frontmatter.image] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.frontmatter.title,
+      description: post.frontmatter.excerpt,
+      images: post.frontmatter.image ? [post.frontmatter.image] : [],
+    },
+  }
 }
 
 export default async function BlogPost({ params }: { params: { slug: string } }) {
