@@ -16,7 +16,7 @@ export interface PostMetadata {
 }
 
 export interface Post {
-  content: any; // Changed from string to any to handle serialized MDX
+  content: string;
   frontmatter: {
     title: string;
     date: string;
@@ -68,16 +68,9 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     const fileContents = fs.readFileSync(filePath, 'utf8');
     const { content, data } = matter(fileContents);
     
-    // Serialize the MDX content
-    const mdxSource = await serialize(content, {
-      mdxOptions: {
-        development: process.env.NODE_ENV === 'development',
-      },
-      parseFrontmatter: true,
-    });
-    
+    // Return raw content - will be processed by MDXRemote directly
     return {
-      content: mdxSource,
+      content: content,
       frontmatter: {
         title: data.title,
         date: data.date,

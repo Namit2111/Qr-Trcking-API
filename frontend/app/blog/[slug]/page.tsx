@@ -19,6 +19,7 @@ export async function generateMetadata({ params }: Props) {
       title: 'Post Not Found | QR Small',
     };
   }
+
   return {
     ...siteMetadata,
     title: post.frontmatter.title,
