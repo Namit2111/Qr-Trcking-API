@@ -8,6 +8,7 @@ import QRPreview from "@/components/qr-preview"
 import CustomToggle from "@/components/custom-toggle"
 import CustomColorPicker from "@/components/custom-color-picker"
 import { saveQRCode } from "@/lib/qr-service"
+import Toast, { ToastType } from "@/components/Toast"
 
 export default function QRGenerator() {
   // QR content state
@@ -16,11 +17,15 @@ export default function QRGenerator() {
   const [qrType, setQrType] = useState<"text" | "url" | "phone" | "sms" | "email" | "contact">("text")
   const [contentType, setContentType] = useState<"url" | "email" | "sms" | "tel" | "text">("text")
 
+  // Toast state
+  const [toast, setToast] = useState<{
+    message: string
+    type: ToastType
+  } | null>(null)
 
   // Feature toggles
   const [enableTracking, setEnableTracking] = useState(false)
   const [enableShortUrl, setEnableShortUrl] = useState(false)
-
 
   // Customization options
   const [foregroundColor, setForegroundColor] = useState("#000000")
@@ -86,9 +91,6 @@ export default function QRGenerator() {
     }
   }
 
-
-
-
   // Handle QR code generation and saving
   const handleGenerateQR = () => {
     if (!content) return
@@ -110,7 +112,6 @@ export default function QRGenerator() {
       }
     })()
 
-
     // In a real app, this would save to a database
     saveQRCode({
       id: Date.now().toString(),
@@ -124,12 +125,22 @@ export default function QRGenerator() {
       scans: [],
     })
 
-    // Show success message or redirect to dashboard
-    alert("QR Code generated successfully!")
+    // Show success toast
+    setToast({
+      message: "QR Code generated and downloaded successfully!",
+      type: "success"
+    })
   }
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       <div className="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-slate-200">
         {/* Left panel - QR code options */}
         <div className="lg:col-span-2 p-6">
@@ -159,8 +170,6 @@ export default function QRGenerator() {
                 </div>
               </div>
 
-
-
               <textarea
                 id="content"
                 rows={3}
@@ -188,7 +197,6 @@ export default function QRGenerator() {
                   Valid {contentType.toUpperCase()} detected
                 </p>
               )}
-
 
             </div>
 
