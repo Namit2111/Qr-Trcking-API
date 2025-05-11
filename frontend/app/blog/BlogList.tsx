@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PostMetadata } from '@/lib/mdx';
+import PaginationBar from '@/components/PaginationBar';
 
 interface BlogListProps {
   posts: PostMetadata[];
@@ -11,7 +12,8 @@ interface BlogListProps {
 
 export default function BlogList({ posts }: BlogListProps) {
   const [search, setSearch] = useState('');
-
+ const [pageSize, setPageSize] = useState(10);
+    const [currentPage, setCurrentPage] = useState(1);
   const filteredPosts = useMemo(() => {
     if (!search) return posts;
     return posts.filter(
@@ -20,7 +22,11 @@ export default function BlogList({ posts }: BlogListProps) {
         post.excerpt.toLowerCase().includes(search.toLowerCase())
     );
   }, [search, posts]);
-
+  const totalPages = Math.ceil((filteredPosts ?? []).length / pageSize);
+      const paginatedPosts = (filteredPosts ?? []).slice(
+        (currentPage - 1) * pageSize,
+        currentPage * pageSize
+      );
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-slate-50 pb-16">
       {/* Hero Section */}
@@ -63,11 +69,11 @@ export default function BlogList({ posts }: BlogListProps) {
 
       {/* Blog Cards Grid */}
       <div className="max-w-6xl mx-auto px-4">
-        {filteredPosts.length === 0 ? (
+        {paginatedPosts.length === 0 ? (
           <div className="text-center text-slate-500 py-20 text-lg">No articles found. Try a different search.</div>
         ) : (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {filteredPosts.map((post) => (
+            {paginatedPosts.map((post) => (
               <Link
                 key={post.slug}
                 href={`/blog/${post.slug}`}
@@ -124,6 +130,13 @@ export default function BlogList({ posts }: BlogListProps) {
           </div>
         )}
       </div>
+      <PaginationBar 
+        totalPages={totalPages}
+        setCurrentPage={setCurrentPage}
+        setPageSize={setPageSize}
+        pageSize={pageSize}
+        currentPage={currentPage}
+        />
     </div>
   );
 } 
