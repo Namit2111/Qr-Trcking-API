@@ -8,12 +8,12 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-md flex items-center justify-center">
+              <div className="w-20 h-20 rounded-md flex items-center justify-center">
                 <Image
-                  src="/logo.jpg"
+                  src="/Logo.png"
                   alt="Logo"
-                  width={32}
-                  height={32}
+                  width={80}
+                  height={80}
                 />
               </div>
               <h1 className="text-xl font-semibold text-slate-800">QR Small</h1>

@@ -9,7 +9,7 @@ import CTASection from '@/components/CTASection'
 
 export const metadata: Metadata = {
   title: 'QR Code Generator | Create, Customize & Track QR Codes',
-  description: 'Create professional QR codes for free. Generate, customize, and track QR codes with our easy-to-use QR code generator. Perfect for businesses, marketing, and personal use.',
+  description: 'Create professional QR codes for free. Generate, customize, and track QR codes easily. Perfect for business, marketing, or personal use.',
   openGraph: {
     title: 'QR Code Generator | Create, Customize & Track QR Codes',
     description: 'Create professional QR codes for free. Generate, customize, and track QR codes with our easy-to-use QR code generator.',

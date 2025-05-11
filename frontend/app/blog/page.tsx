@@ -4,7 +4,7 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'QR Code Blog | Tips, Guides & Best Practices',
-  description: 'Explore our comprehensive guides, tips, and best practices for QR codes. Learn about QR code generation, customization, tracking, and implementation strategies for your business.',
+  description: 'Explore guides, tips, and best practices for QR codes. Learn about QR code generation, customization, tracking, and strategies for your business.',
   openGraph: {
     title: 'QR Code Blog | Tips, Guides & Best Practices',
     description: 'Explore our comprehensive guides, tips, and best practices for QR codes. Learn about QR code generation, customization, tracking, and implementation strategies.',

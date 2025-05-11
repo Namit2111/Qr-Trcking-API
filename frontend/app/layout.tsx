@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     default: 'QR Code Generator | Create, Customize & Track QR Codes',
     template: '%s | QR Small'
   },
-  description: 'Create professional QR codes for free. Generate, customize, and track QR codes with our easy-to-use QR code generator. Perfect for businesses, marketing, and personal use.',
+  description: 'Create professional QR codes for free. Generate, customize, and track QR codes easily. Perfect for business, marketing, or personal use.',
   keywords: ['QR code generator', 'QR code maker', 'QR code creator', 'custom QR codes', 'QR code tracking', 'dynamic QR codes', 'business QR codes', 'marketing QR codes'],
   authors: [{ name: 'QR Small' }],
   creator: 'QR Small',
@@ -53,6 +53,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="canonical" href={process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'} />
+        <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+      </head>
       <body>
         <div className="min-h-screen flex flex-col">
           <Navbar />
