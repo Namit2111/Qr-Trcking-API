@@ -1,5 +1,4 @@
 pypng
-flask
 fastapi
 pyqrcode
 requests
@@ -11,3 +10,5 @@ passlib[bcrypt]
 python-multipart
 email-validator
 uvicorn
+pytest
+httpx

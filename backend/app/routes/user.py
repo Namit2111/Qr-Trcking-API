@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from datetime import datetime
 from bson import ObjectId
-from app.config.mongo import db
+from app.config.mongo import get_database
 from app.models.user import User, UserCreate
 from passlib.context import CryptContext
 from pydantic import BaseModel
@@ -24,6 +24,7 @@ class LoginData(BaseModel):
 # Routes
 @router.post("/signup", response_model=User)
 async def signup(user: UserCreate):
+    db = get_database()
     # Check if user already exists
     if db.users.find_one({"email": user.email}):
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -40,10 +41,12 @@ async def signup(user: UserCreate):
     # Return created user (without password)
     created_user = db.users.find_one({"_id": result.inserted_id})
     created_user["id"] = str(created_user.pop("_id"))
-    return created_user
+    created_user.pop("password")
+    return User.model_validate(created_user)
 
 @router.post("/login", response_model=User)
 async def login(login_data: LoginData):
+    db = get_database()
     # Find user
     user = db.users.find_one({"email": login_data.email})
     if not user:
@@ -56,14 +59,15 @@ async def login(login_data: LoginData):
     # Return user info (without password)
     user["id"] = str(user.pop("_id"))
     user.pop("password")
-    return user
+    return User.model_validate(user)
 
 @router.get("/me/{user_id}", response_model=User)
 async def get_user(user_id: str):
+    db = get_database()
     user = db.users.find_one({"_id": ObjectId(user_id)})
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
     user["id"] = str(user.pop("_id"))
     user.pop("password")
-    return user
+    return User.model_validate(user)
