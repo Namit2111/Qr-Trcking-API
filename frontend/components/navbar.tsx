@@ -3,10 +3,19 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogOut } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useUser } from '@/lib/context';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, setUser } = useUser();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    setUser(null);
+    router.push('/login');
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -41,18 +50,35 @@ export default function Navbar() {
               </li>
             </ul>
             <div className="flex items-center gap-4">
-              <Link
-                href="/login"
-                className="text-slate-800 font-medium hover:text-emerald-600 transition-colors"
-              >
-                Sign in
-              </Link>
-              <Link
-                href="/signup"
-                className="bg-emerald-600 text-white px-4 py-2 rounded-md font-medium hover:bg-emerald-700 transition-colors"
-              >
-                Sign up
-              </Link>
+              {user ? (
+                <div className="flex items-center gap-4">
+                  <span className="text-slate-800 font-medium">
+                    Welcome, {user.name}
+                  </span>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 text-slate-800 font-medium hover:text-emerald-600 transition-colors"
+                  >
+                    <LogOut size={18} />
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="text-slate-800 font-medium hover:text-emerald-600 transition-colors"
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className="bg-emerald-600 text-white px-4 py-2 rounded-md font-medium hover:bg-emerald-700 transition-colors"
+                  >
+                    Sign up
+                  </Link>
+                </>
+              )}
             </div>
           </nav>
 
@@ -85,20 +111,40 @@ export default function Navbar() {
                 Blog
               </Link>
               <div className="flex flex-col space-y-2 pt-2 border-t border-slate-200">
-                <Link
-                  href="/login"
-                  className="text-slate-800 font-medium hover:text-emerald-600 transition-colors px-2 py-1"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Sign in
-                </Link>
-                <Link
-                  href="/signup"
-                  className="bg-emerald-600 text-white px-4 py-2 rounded-md font-medium hover:bg-emerald-700 transition-colors text-center"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Sign up
-                </Link>
+                {user ? (
+                  <>
+                    <div className="px-2 py-1 text-slate-800 font-medium">
+                      Welcome, {user.name}
+                    </div>
+                    <button
+                      onClick={() => {
+                        handleLogout();
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex items-center gap-2 text-slate-800 font-medium hover:text-emerald-600 transition-colors px-2 py-1"
+                    >
+                      <LogOut size={18} />
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/login"
+                      className="text-slate-800 font-medium hover:text-emerald-600 transition-colors px-2 py-1"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Sign in
+                    </Link>
+                    <Link
+                      href="/signup"
+                      className="bg-emerald-600 text-white px-4 py-2 rounded-md font-medium hover:bg-emerald-700 transition-colors text-center"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Sign up
+                    </Link>
+                  </>
+                )}
               </div>
             </nav>
           </div>

@@ -1,7 +1,13 @@
 pypng
 flask
+fastapi
 pyqrcode
 requests
 pymongo
 Flask
 flask-cors
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+email-validator
+uvicorn

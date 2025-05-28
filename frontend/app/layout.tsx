@@ -1,6 +1,10 @@
 import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/navbar'
+import { UserProvider } from '@/lib/context'
+
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: {
@@ -43,7 +47,6 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
- 
 }
 
 export default function RootLayout({
@@ -57,11 +60,13 @@ export default function RootLayout({
         <link rel="canonical" href={process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'} />
         <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
       </head>
-      <body>
-        <div className="min-h-screen flex flex-col">
-          <Navbar />
-          {children}
-        </div>
+      <body className={inter.className}>
+        <UserProvider>
+          <div className="min-h-screen flex flex-col">
+            <Navbar />
+            {children}
+          </div>
+        </UserProvider>
       </body>
     </html>
   )

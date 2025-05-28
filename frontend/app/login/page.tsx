@@ -4,16 +4,31 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { api } from '@/lib/api';
+import { useUser } from '@/lib/context';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { setUser } = useUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement login logic
-    console.log('Login attempt:', { email, password });
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const response = await api.login({ email, password });
+      setUser(response);
+      router.push('/');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -38,6 +53,12 @@ export default function LoginPage() {
             </div>
 
             <div className="bg-white rounded-lg shadow-sm p-6">
+              {error && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-md">
+                  {error}
+                </div>
+              )}
+
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
@@ -53,6 +74,7 @@ export default function LoginPage() {
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    disabled={isLoading}
                   />
                 </div>
 
@@ -70,6 +92,7 @@ export default function LoginPage() {
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    disabled={isLoading}
                   />
                 </div>
 
@@ -80,6 +103,7 @@ export default function LoginPage() {
                       name="remember-me"
                       type="checkbox"
                       className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-slate-300 rounded"
+                      disabled={isLoading}
                     />
                     <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-700">
                       Remember me
@@ -96,9 +120,10 @@ export default function LoginPage() {
 
                 <button
                   type="submit"
-                  className="w-full bg-emerald-600 text-white py-2 px-4 rounded-md font-medium hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors"
+                  className="w-full bg-emerald-600 text-white py-2 px-4 rounded-md font-medium hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isLoading}
                 >
-                  Sign in
+                  {isLoading ? 'Signing in...' : 'Sign in'}
                 </button>
               </form>
 
