@@ -1,0 +1,119 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+
+export default function LoginPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // TODO: Implement login logic
+    console.log('Login attempt:', { email, password });
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      <main className="flex-1 py-8">
+        <div className="container mx-auto px-4">
+          <div className="max-w-md mx-auto">
+            <div className="text-center mb-8">
+              <div className="flex justify-center mb-6">
+                <Image
+                  src="/Logo.png"
+                  alt="Logo"
+                  width={120}
+                  height={120}
+                  className="rounded-md"
+                />
+              </div>
+              <h1 className="text-3xl font-bold text-slate-800 mb-2">Welcome back</h1>
+              <p className="text-slate-600">
+                Sign in to your account to continue
+              </p>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
+                    Email address
+                  </label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    className="w-full px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
+                    Password
+                  </label>
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                    className="w-full px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <input
+                      id="remember-me"
+                      name="remember-me"
+                      type="checkbox"
+                      className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-slate-300 rounded"
+                    />
+                    <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-700">
+                      Remember me
+                    </label>
+                  </div>
+
+                  <Link
+                    href="/forgot-password"
+                    className="text-sm font-medium text-emerald-600 hover:text-emerald-500"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full bg-emerald-600 text-white py-2 px-4 rounded-md font-medium hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors"
+                >
+                  Sign in
+                </button>
+              </form>
+
+              <div className="mt-6 text-center">
+                <p className="text-sm text-slate-600">
+                  Don't have an account?{' '}
+                  <Link href="/signup" className="font-medium text-emerald-600 hover:text-emerald-500">
+                    Sign up
+                  </Link>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+} 
