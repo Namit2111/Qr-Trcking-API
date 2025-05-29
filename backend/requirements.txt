@@ -12,3 +12,4 @@ email-validator
 uvicorn
 pytest
 httpx
+python-dotenv
