@@ -3,35 +3,48 @@ version: '3.8'
 services:
   api:
     container_name: qr-api
-    image: qr-api
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile
     volumes:
       - ./app:/usr/src/app/app
     ports:
-      - 5000:5000
+      - "8000:8000"
     environment:
-      - MONGODB_URL=mongodb://mongodb:27017/node-boilerplate
-    #   - CELERY_BROKER_URL=redis://redis:6379/0
-    #   - CELERY_RESULT_BACKEND=redis://redis:6379/1
-    #   - APP_CONFIG_FILE=local
-    #   - APP_CONFIG_DIR=/usr/src/app/app/config
+      - MONGODB_URL=mongodb://mongodb:27017/qr
+      - FRONTEND_URL=http://localhost:3000
+    restart: unless-stopped
     depends_on:
       - mongodb
     networks:
-      - node-network
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   mongodb:
-    image: mongo
+    container_name: qr-mongodb
+    image: mongo:latest
     ports:
-      - '27017:27017'
+      - "27017:27017"
     volumes:
-      - dbdata6:/data/db
+      - mongodb_data:/data/db
     networks:
-      - node-network
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
-  dbdata6:
+  mongodb_data:
+    name: qr-tracker-mongodb-data
 
 networks:
-  node-network:
+  app-network:
+    name: qr-tracker-network
     driver: bridge
