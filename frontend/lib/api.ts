@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export interface User {
   id: string;
@@ -57,6 +57,22 @@ export const api = {
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.detail || 'Failed to login');
+    }
+
+    return response.json();
+  },
+
+  async demoLogin(): Promise<LoginResponse> {
+    const response = await fetch(`${API_URL}/user/demo-login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to login with demo account');
     }
 
     return response.json();

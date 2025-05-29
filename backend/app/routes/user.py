@@ -71,3 +71,26 @@ async def get_user(user_id: str):
     user["id"] = str(user.pop("_id"))
     user.pop("password")
     return User.model_validate(user)
+
+@router.post("/demo-login", response_model=User)
+async def demo_login():
+    db = get_database()
+    
+    # Check if demo user exists, if not create one
+    demo_user = db.users.find_one({"email": "demo@example.com"})
+    if not demo_user:
+        # Create demo user
+        demo_user = {
+            "email": "demo@example.com",
+            "name": "Demo User",
+            "password": get_password_hash("demo123"),  # You can change this password
+            "is_active": True,
+            "created_at": datetime.utcnow()
+        }
+        result = db.users.insert_one(demo_user)
+        demo_user["_id"] = result.inserted_id
+    
+    # Return user info (without password)
+    demo_user["id"] = str(demo_user.pop("_id"))
+    demo_user.pop("password")
+    return User.model_validate(demo_user)
