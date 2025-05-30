@@ -10,6 +10,8 @@ router = APIRouter(prefix="/qr", tags=["QR Code"])
 
 class QRRequest(BaseModel):
     url: str
+    user_id: str
+    name: str | None = None
 
 class QRResponse(BaseModel):
     url: str
@@ -44,8 +46,12 @@ async def generate_trackable_qr(request: QRRequest):
     db = get_database()
     links = db.links
     
-    # Check if link already exists
-    existing_link = links.find_one({"url": request.url})
+    # Check if link already exists for this user
+    query = {"url": request.url}
+    if request.user_id:
+        query["user_id"] = request.user_id
+    
+    existing_link = links.find_one(query)
     
     if existing_link:
         # If link exists, use existing tracking URL
@@ -59,6 +65,8 @@ async def generate_trackable_qr(request: QRRequest):
         # If link doesn't exist, create new entry
         link_data = {
             "url": request.url,
+            "user_id": request.user_id,
+            "name": request.name or request.url.split("//")[-1].split("/")[0],  # Use domain as default name
             "open_count": 0,
             "scans": [],
             "created_at": datetime.utcnow()

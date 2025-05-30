@@ -11,7 +11,6 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, setUser } = useUser();
   const router = useRouter();
-
   const handleLogout = () => {
     setUser(null);
     router.push('/login');
@@ -48,6 +47,13 @@ export default function Navbar() {
                   Blog
                 </Link>
               </li>
+              {user && (
+                <li>
+                  <Link href="/dashboard" className="text-slate-800 font-medium hover:text-emerald-600 transition-colors">
+                    Dashboard
+                  </Link>
+                </li>
+              )}
             </ul>
             <div className="flex items-center gap-4">
               {user ? (
@@ -110,6 +116,15 @@ export default function Navbar() {
               >
                 Blog
               </Link>
+              {user && (
+                <Link
+                  href="/dashboard"
+                  className="text-slate-800 font-medium hover:text-emerald-600 transition-colors px-2 py-1"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Dashboard
+                </Link>
+              )}
               <div className="flex flex-col space-y-2 pt-2 border-t border-slate-200">
                 {user ? (
                   <>

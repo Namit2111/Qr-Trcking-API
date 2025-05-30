@@ -1,4 +1,15 @@
-import type { QRCodeData } from "./types"
+export interface QRCodeData {
+  id: string;
+  content: string;
+  isTracking: boolean;
+  isShortUrl: boolean;
+  foregroundColor: string;
+  backgroundColor: string;
+  hasLogo: boolean;
+  createdAt: string;
+  scans: any[];
+  trackingUrl?: string;
+}
 
 // Mock storage for QR codes (in a real app, this would be a database)
 const qrCodes: QRCodeData[] = [

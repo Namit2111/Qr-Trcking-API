@@ -83,7 +83,6 @@ async function getRandomPosts(count: number = 3) {
 
 export default async function Home() {
   const randomPosts = await getRandomPosts()
-
   return (
     <div className="min-h-screen flex flex-col">
       <JsonLd data={jsonLdData} />

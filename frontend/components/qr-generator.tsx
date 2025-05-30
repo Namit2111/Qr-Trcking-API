@@ -17,7 +17,7 @@ export default function QRGenerator() {
   const [isUrl, setIsUrl] = useState(false)
   const [qrType, setQrType] = useState<"text" | "url" | "phone" | "sms" | "email" | "contact">("text")
   const [contentType, setContentType] = useState<"url" | "email" | "sms" | "tel" | "text">("text")
-  const { user } = useUser()
+  const { user, setUser } = useUser();
 
   // Toast state
   const [toast, setToast] = useState<{
@@ -94,8 +94,10 @@ export default function QRGenerator() {
   }
 
   // Handle QR code generation and saving
-  const handleGenerateQR = () => {
+  const handleGenerateQR = async () => {
     if (!content) return
+
+    console.log('Current user:', user); // Debug log
 
     const formattedContent = (() => {
       switch (qrType) {
@@ -114,24 +116,59 @@ export default function QRGenerator() {
       }
     })()
 
-    // In a real app, this would save to a database
-    saveQRCode({
-      id: Date.now().toString(),
-      content: formattedContent,
-      isTracking: enableTracking,
-      isShortUrl: enableShortUrl,
-      foregroundColor,
-      backgroundColor,
-      hasLogo: !!logo,
-      createdAt: new Date().toISOString(),
-      scans: [],
-    })
+    // console.log('Request body:', { // Debug log
+    //   url: formattedContent,
+    //   user_id: user?.id || '',
+    //   name: content.split("//")[-1]?.split("/")[0] || content
+    // });
 
-    // Show success toast
-    setToast({
-      message: "QR Code generated and downloaded successfully!",
-      type: "success"
-    })
+    // try {
+    //   // Make API request to generate QR code
+    //   const response = await fetch('/api/qr/trackable', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       'Authorization': `Bearer ${localStorage.getItem('token')}`
+    //     },
+    //     body: JSON.stringify({
+    //       url: formattedContent,
+    //       user_id: user?.id || '',
+    //       name: content.split("//")[-1]?.split("/")[0] || content
+    //     })
+    //   });
+
+    //   if (!response.ok) {
+    //     throw new Error('Failed to generate QR code');
+    //   }
+
+    //   const data = await response.json();
+
+    //   // Save QR code data locally
+    //   saveQRCode({
+    //     id: Date.now().toString(),
+    //     content: formattedContent,
+    //     isTracking: enableTracking,
+    //     isShortUrl: enableShortUrl,
+    //     foregroundColor,
+    //     backgroundColor,
+    //     hasLogo: !!logo,
+    //     createdAt: new Date().toISOString(),
+    //     scans: [],
+    //     trackingUrl: data.tracking_url
+    //   });
+
+    //   // Show success toast
+    //   setToast({
+    //     message: "QR Code generated and downloaded successfully!",
+    //     type: "success"
+    //   });
+    // } catch (error) {
+    //   console.error('Error generating QR code:', error);
+    //   setToast({
+    //     message: "Failed to generate QR code. Please try again.",
+    //     type: "error"
+    //   });
+    // }
   }
 
   return (

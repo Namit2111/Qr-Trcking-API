@@ -128,7 +128,11 @@ export default function QRPreview({
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ url: content }),
+          body: JSON.stringify({ 
+            url: content,
+            user_id: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!).id : '',
+            name: content.split("//")[-1]?.split("/")[0] || content
+          }),
         })
 
         if (!response.ok) {
