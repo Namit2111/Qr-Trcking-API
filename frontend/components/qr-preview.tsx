@@ -142,7 +142,7 @@ export default function QRPreview({
 
         const data = await response.json()
         // Update QR content with tracking URL
-        const qrContent = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}${data.tracking_url}`
+        const qrContent = `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000'}${data.tracking_url}`
         
         // Generate QR code with tracking URL
         if (canvasRef.current) {
