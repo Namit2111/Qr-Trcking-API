@@ -140,3 +140,25 @@ async def get_link_stats(url: str):
         "scans": link_data.get("scans", []),
         "created_at": link_data.get("created_at")
     }
+
+@router.get("/stats/all/{user_id}")
+async def get_user_stats(user_id: str):
+    # Get database connection
+    db = get_database()
+    links = db.links
+    
+    # Find all links for this user
+    user_links = list(links.find({"user_id": user_id}))
+    if not user_links:
+        return []
+    
+    # Format and return the stats
+    return [{
+        "id": str(link["_id"]),
+        "url": link["url"],
+        "name": link.get("name", "Unnamed QR Code"),
+        "open_count": link.get("open_count", 0),
+        "scans": link.get("scans", []),
+        "created_at": link.get("created_at"),
+        "last_scanned": max([scan["timestamp"] for scan in link.get("scans", [])], default=None)
+    } for link in user_links]

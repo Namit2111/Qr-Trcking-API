@@ -7,11 +7,17 @@ import DashboardHeader from '@/components/dashboard-header';
 
 interface QRCodeData {
   id: string;
-  name: string;
   url: string;
-  scans: number;
-  createdAt: string;
-  lastScanned?: string;
+  name: string;
+  open_count: number;
+  scans: Array<{
+    timestamp: string;
+    ip_address: string;
+    user_agent: string;
+    device_type: string;
+  }>;
+  created_at: string;
+  last_scanned: string | null;
 }
 
 export default function DashboardPage() {
@@ -19,16 +25,24 @@ export default function DashboardPage() {
   const router = useRouter();
   const [qrCodes, setQrCodes] = useState<QRCodeData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    if (!user) {
+    // Wait for user context to initialize
+    if (!initialized) {
+      setInitialized(true);
+      return;
+    }
+
+    // Only redirect if we're sure there's no user
+    if (initialized && !user) {
       router.push('/login');
       return;
     }
 
     const fetchQRData = async () => {
       try {
-        const response = await fetch('/api/qr-codes/user', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/qr/stats/all/${user?.id}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -47,9 +61,21 @@ export default function DashboardPage() {
       }
     };
 
-    fetchQRData();
-  }, [user, router]);
+    if (user) {
+      fetchQRData();
+    }
+  }, [user, router, initialized]);
 
+  // Show loading state while initializing
+  if (!initialized) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex justify-center items-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+      </div>
+    );
+  }
+
+  // Don't render anything if not logged in
   if (!user) {
     return null;
   }
@@ -99,6 +125,9 @@ export default function DashboardPage() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Last Scanned
                     </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -113,13 +142,21 @@ export default function DashboardPage() {
                         </a>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {qr.scans}
+                        {qr.open_count}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(qr.createdAt).toLocaleDateString()}
+                        {new Date(qr.created_at).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {qr.lastScanned ? new Date(qr.lastScanned).toLocaleDateString() : 'Never'}
+                        {qr.last_scanned ? new Date(qr.last_scanned).toLocaleDateString() : 'Never'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <button
+                          onClick={() => router.push(`/dashboard/stats/${qr.id}`)}
+                          className="text-emerald-600 hover:text-emerald-700"
+                        >
+                          View Details
+                        </button>
                       </td>
                     </tr>
                   ))}
