@@ -6,9 +6,10 @@ interface CustomToggleProps {
   description: string
   checked: boolean
   onChange: (checked: boolean) => void
+  disabled?: boolean
 }
 
-export default function CustomToggle({ id, label, description, checked, onChange }: CustomToggleProps) {
+export default function CustomToggle({ id, label, description, checked, onChange, disabled = false }: CustomToggleProps) {
   return (
     <div className="flex items-start space-x-3">
       <div className="flex-shrink-0 pt-0.5">
@@ -16,10 +17,11 @@ export default function CustomToggle({ id, label, description, checked, onChange
           type="button"
           role="switch"
           aria-checked={checked}
-          onClick={() => onChange(!checked)}
+          onClick={() => !disabled && onChange(!checked)}
           className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 ${
             checked ? "bg-emerald-600" : "bg-slate-200"
-          }`}
+          } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+          disabled={disabled}
         >
           <span
             className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
@@ -29,7 +31,7 @@ export default function CustomToggle({ id, label, description, checked, onChange
         </button>
       </div>
       <div className="flex-1">
-        <label htmlFor={id} className="text-sm font-medium text-slate-700">
+        <label htmlFor={id} className={`text-sm font-medium ${disabled ? "text-slate-500" : "text-slate-700"}`}>
           {label}
         </label>
         <p className="mt-1 text-xs text-slate-500">{description}</p>

@@ -1,26 +1,4 @@
-# import os
 
-# from flask import Flask, jsonify, redirect, request, send_file
-# from flask_cors import CORS
-# from pymongo import MongoClient
-
-# import checkurl as checkurl
-# import qrgen as qrgen
-
-# app = Flask(__name__)
-# CORS(app)
-# # Set up MongoDB client
-
-# mongodb_url = os.environ.get("MONGODB_URL")
-
-# client = MongoClient(mongodb_url)
-# db = client["QR-Links"]
-# links = db["links"]
-
-
-# @app.route("/")
-# def home():
-#     return "QR code API "
 
 
 # @app.route("/qr")

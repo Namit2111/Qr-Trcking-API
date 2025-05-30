@@ -9,6 +9,7 @@ import CustomToggle from "@/components/custom-toggle"
 import CustomColorPicker from "@/components/custom-color-picker"
 import { saveQRCode } from "@/lib/qr-service"
 import Toast, { ToastType } from "@/components/Toast"
+import { useUser } from "@/lib/context"
 
 export default function QRGenerator() {
   // QR content state
@@ -16,6 +17,7 @@ export default function QRGenerator() {
   const [isUrl, setIsUrl] = useState(false)
   const [qrType, setQrType] = useState<"text" | "url" | "phone" | "sms" | "email" | "contact">("text")
   const [contentType, setContentType] = useState<"url" | "email" | "sms" | "tel" | "text">("text")
+  const { user } = useUser()
 
   // Toast state
   const [toast, setToast] = useState<{
@@ -40,13 +42,13 @@ export default function QRGenerator() {
   useEffect(() => {
     const type = detectContentType(content)
     setContentType(type)
+    setIsUrl(type === "url")
 
-    // If not a URL, disable tracking and short URL options
-    // if (!valid) {
-    //   setEnableTracking(false)
-    //   setEnableShortUrl(false)
-    // }
-  }, [content])
+    // If not a URL or user is not logged in, disable tracking
+    if (type !== "url" || !user) {
+      setEnableTracking(false)
+    }
+  }, [content, user])
 
   // Handle logo upload
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -197,6 +199,18 @@ export default function QRGenerator() {
                   Valid {contentType.toUpperCase()} detected
                 </p>
               )}
+
+              {/* Tracking Toggle */}
+              <div className="mt-4">
+                <CustomToggle
+                  id="tracking-toggle"
+                  label="Enable QR Code Tracking"
+                  description={!user ? "Sign in to enable tracking" : !isUrl ? "Only available for URLs" : "Track scans and analytics for this QR code"}
+                  checked={enableTracking}
+                  onChange={setEnableTracking}
+                  disabled={!user || !isUrl}
+                />
+              </div>
 
             </div>
 

@@ -47,8 +47,7 @@ export default function QRPreview({
         // Add metadata to content if features are enabled
         let qrContent = content
         if (enableTracking) {
-          // In a real app, this would add tracking parameters
-          qrContent = `tracking:${qrContent}`
+          qrContent = `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000'}/qr/track?link=${qrContent}`
         }
         if (enableShortUrl) {
           // In a real app, this would generate a short URL
@@ -121,12 +120,46 @@ export default function QRPreview({
     if (!content) return
 
     setIsGenerating(true)
-    // Simulate processing time
-    setTimeout(() => {
+    try {
+      // If tracking is enabled, validate URL with backend first
+      if (enableTracking) {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/qr/trackable`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ url: content }),
+        })
+
+        if (!response.ok) {
+          const error = await response.json()
+          throw new Error(error.detail || 'Invalid URL')
+        }
+
+        const data = await response.json()
+        // Update QR content with tracking URL
+        const qrContent = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}${data.tracking_url}`
+        
+        // Generate QR code with tracking URL
+        if (canvasRef.current) {
+          await QRCode.toCanvas(canvasRef.current, qrContent, {
+            width: 240,
+            margin: 1,
+            color: {
+              dark: foregroundColor,
+              light: backgroundColor,
+            },
+          })
+
+          // Update data URL
+          setQrDataUrl(canvasRef.current.toDataURL(downloadFormat === "png" ? "image/png" : "image/svg+xml"))
+        }
+      }
+
+      // Call the onGenerate callback
       onGenerate()
-      setIsGenerating(false)
       
-      // Download the QR code after generation
+      // Download the QR code
       if (qrDataUrl) {
         const link = document.createElement("a")
         link.href = qrDataUrl
@@ -141,7 +174,15 @@ export default function QRPreview({
           type: "success"
         })
       }
-    }, 800)
+    } catch (error) {
+      console.error("Error generating QR code:", error)
+      setToast({
+        message: error instanceof Error ? error.message : "Error generating QR code. Please try again.",
+        type: "error"
+      })
+    } finally {
+      setIsGenerating(false)
+    }
   }
 
   return (
