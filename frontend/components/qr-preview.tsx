@@ -123,7 +123,7 @@ export default function QRPreview({
     try {
       // If tracking is enabled, validate URL with backend first
       if (enableTracking) {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/qr/trackable`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'}/qr/trackable`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
